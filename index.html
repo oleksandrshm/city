@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js з 3D-моделлю VC і управлінням</title>
+    <title>City</title>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -41,8 +41,7 @@
         spotLight.decay = 2; // Згасання
         spotLight.distance = 100; // Дистанція освітлення
         scene.add(spotLight);
-
-        // Завантаження GLB-моделі (VC)
+        
         const loader = new THREE.GLTFLoader();
         const modelUrl = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/VC/glTF/VC.gltf';
 
