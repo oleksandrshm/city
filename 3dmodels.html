@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js з 3D-моделлю VC і управлінням</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Підключаємо Three.js, GLTFLoader і OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.138.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.138.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.138.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        // Створення сцени
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xdddddd);
+
+        // Камера
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        // Рендер
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Освітлення
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // М'яке освітлення
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(1, 1, 1).normalize();
+        scene.add(directionalLight);
+
+        const spotLight = new THREE.SpotLight(0xffffff, 1);
+        spotLight.position.set(2, 3, 3);
+        spotLight.angle = Math.PI / 6; // Кут розкриття
+        spotLight.penumbra = 0.1; // Плавність переходу тіні
+        spotLight.decay = 2; // Згасання
+        spotLight.distance = 100; // Дистанція освітлення
+        scene.add(spotLight);
+
+        // Завантаження GLB-моделі (VC)
+        const loader = new THREE.GLTFLoader();
+        const modelUrl = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/VC/glTF/VC.gltf';
+
+        loader.load(modelUrl, function (gltf) {
+            const model = gltf.scene;
+            scene.add(model);
+            model.position.set(0, 0, 0);
+        }, undefined, function (error) {
+            console.error(error);
+        });
+
+        // Додаємо OrbitControls для керування камерою
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;  // Додає плавність до руху
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = false;  // Забороняє вертикальне переміщення
+        controls.maxPolarAngle = Math.PI / 2;  // Обмежує обертання камери по вертикалі
+
+        // Анімаційний цикл
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Оновлюємо контролери
+            controls.update();
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Оновлення розміру при зміні розміру вікна
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>
